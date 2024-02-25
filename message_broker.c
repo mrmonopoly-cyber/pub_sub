@@ -17,15 +17,18 @@ struct broker
 enum pack_type
 {
     SUBSCRIBTION,
+    PUBLISHING,
 };
 
-struct sub_pack
+struct req_pack
 {
     const enum pack_type _pkg_type;
-    const char* _list_ch;
+    const char** _list_ch;
+    const void* data;
+    const unsigned int data_amount;
 };
 
-
+//private
 static void 
 print_address(const address* addr)
 {
@@ -36,6 +39,16 @@ print_address(const address* addr)
     fprintf(stderr,"%d", addr->addr_sectors[i]);
 }
 
+static void
+send_request(const address* br_addr, struct req_pack* pkg,const char **chann_subs, const int ch_num)
+{
+    int i=0;
+    for(i=0;i<ch_num;i++)
+    {
+        send_connections(br_addr, pkg, sizeof(*pkg) + strlen(chann_subs[i]));
+    }
+}
+//public
 broker* 
 init_broker(const address* addr, const unsigned int port)
 {
@@ -61,6 +74,7 @@ init_broker(const address* addr, const unsigned int port)
 void 
 start_listening(broker* br)
 {
+
 }
 
 void 
@@ -70,28 +84,35 @@ close_listening(broker* br)
 }
 
 void 
-publish_broker(const address* br_addr, const char* chann_subs[], 
+publish_broker(const address* br_addr, const char** chann_subs, const unsigned int ch_num, 
         const void* data,const unsigned int data_size)
 {
-    
-}
-
-void 
-subscribe_to_channel_broker(const address* br_addr, const char* chann_subs[], const unsigned int ch_num)
-{
-    int i =0;
-    struct sub_pack sub_req =
+    struct req_pack pub_req=
     {
         ._pkg_type = SUBSCRIBTION,
-        ._list_ch = NULL,
+        ._list_ch = chann_subs,
+        .data=data,
+        .data_amount=data_size,
     };
-
-    for(i=0;i<ch_num;i++)
-    {
-        sub_req._list_ch = chann_subs[i];
-        send_connections(br_addr, &sub_req, sizeof(sub_req) + strlen(chann_subs[i]));
-    }
+    send_request(br_addr, &pub_req, chann_subs, ch_num);
 }
 
 void 
-free_broker(broker* br);
+subscribe_to_channel_broker(const address* br_addr, const char** chann_subs, 
+        const unsigned int ch_num)
+{
+    struct req_pack sub_req =
+    {
+        ._pkg_type = SUBSCRIBTION,
+        ._list_ch = chann_subs,
+        .data=NULL,
+        .data_amount=0,
+    };
+    send_request(br_addr, &sub_req, chann_subs, ch_num);
+}
+
+void 
+free_broker(broker* br)
+{
+
+}
