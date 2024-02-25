@@ -1,16 +1,18 @@
 #pragma once
 
-typedef char channel[];
+#include "channel.h"
+
+#define IP_ADDR_SECTORS 4
 
 typedef struct broker broker;
-typedef struct subscriber 
-{
-    unsigned long port;
-    char ip_addr[];
-}subscriber;
 
-broker* init_broker();
+typedef struct address{//0.0.0.0 - 255.255.255.255
+    unsigned int addr_sectors[IP_ADDR_SECTORS];
+    unsigned int port;
+}address;
 
-void publish(broker* br, const channel ch, const void* data,const unsigned int data_size );
-channel* channel_list(const broker* br); 
-void subscribe_to_channel(broker* br, const channel ch,const subscriber *sub);
+broker* init_broker(const address *addr, const unsigned int port);
+void publish_broker(broker* br, const char* chann_subs[], const void* data,const unsigned int data_size);
+void subscribe_to_channel_broker(broker* br, const char* chann_subs[]);
+
+void free_broker(broker* br);
