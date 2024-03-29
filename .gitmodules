@@ -1,0 +1,3 @@
+[submodule "my_lib"]
+	path = my_lib
+	url = https://github.com/mrmonopoly-cyber/my_lib.git
