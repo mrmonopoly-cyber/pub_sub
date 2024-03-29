@@ -5,12 +5,13 @@
 #include "channel.h"
 #include "message_borker.h"
 #include "connections.h"
+#include "my_lib/c_vector/c_vector.h"
 
 
 struct broker 
 {
     address _addr; 
-    channel* _list_ch;
+    c_vector* _list_ch;
     char listening:1;
 };
 
@@ -48,12 +49,37 @@ send_request(const address* br_addr, struct req_pack* pkg,const char **chann_sub
         send_connections(br_addr, pkg, sizeof(*pkg) + strlen(chann_subs[i]));
     }
 }
+
+static inline void 
+free_channel_wrapper(void *ch){
+    channel_free((channel*) ch);
+}
+
+static inline int
+channel_cmp_wrapper(const void* ele1, const void* ele2){
+    return channel_cmp_wrapper((channel*) ele1, (channel*)ele2);
+}
+
+static inline void
+channel_print_wrapper(const void* ele){
+    return channel_print_wrapper((channel*) ele);
+}
+
 //public
 broker* 
 init_broker(const address* addr, const unsigned int port)
 {
     broker* br_init= calloc(1, sizeof(*br_init));
     const unsigned short* new_addr = addr->addr_sectors;
+    const struct c_vector_input_init args = {
+        .capacity = -1,
+        .found_f = channel_cmp_wrapper,
+        .ele_size = channel_sizeof(),
+        .free_fun = free_channel_wrapper,
+        .print_fun = channel_print_wrapper,
+    };
+
+    br_init->_list_ch = c_vector_init(&args);
 
     for(int i=0;i<IP_ADDR_SECTORS;i++){
         if(new_addr[i] < 0 ||  new_addr[i] > 255){
