@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "channel.h"
-#include "message_borker.h"
-#include "connections.h"
-#include "my_lib/c_vector/c_vector.h"
+#include "../utility/channel.h"
+#include "../broker/message_borker.h"
+#include "../utility/connections.h"
+#include "../utility/my_lib/c_vector/c_vector.h"
 
 
 struct broker 
