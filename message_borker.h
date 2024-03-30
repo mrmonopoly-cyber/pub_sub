@@ -6,7 +6,7 @@
 typedef struct broker broker;
 
 //server
-broker* broker_init(const address* addr, const unsigned int port);
+broker* broker_init(const address* addr);
 void broker_start_listening(broker* br);
 void broker_close_listening(broker* br);
 address* broker_get_addr(const broker *br);

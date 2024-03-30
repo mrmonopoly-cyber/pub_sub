@@ -8,5 +8,6 @@ typedef struct address{//0.0.0.0 - 255.255.255.255
     unsigned short port;
 }address;
 
+int conncetions_init(address* addr, const char* ip_addr, const unsigned short port);
 void send_connections(const address* addr, const void *data, const unsigned int data_amount);
 void recv_connections(address* o_client_addr, recv_fun fun, void *args);
