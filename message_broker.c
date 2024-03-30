@@ -181,15 +181,3 @@ free_broker(broker* br)
     c_vector_free(br->_list_ch);
     free(br);
 }
-
-int main(int argc, char *argv[])
-{
-    address addr;
-    broker* b;
-
-    conncetions_init(&addr, "localhost", 8080);
-    b = broker_init(&addr);
-
-    broker_free(b);
-    return EXIT_SUCCESS;
-}
